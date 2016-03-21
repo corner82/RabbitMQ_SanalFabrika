@@ -7,21 +7,13 @@
  * @license   
  */
 
-namespace Utill\Factories\ResultSetFactories;
+namespace Utill\Factories;
 
 /**
- * base factory class for resultset helpers
+ * base class for factory type operations
  * @author Mustafa Zeynel Dağlı
  * @since 11/02/2016
  */
-class ResultSetHelperFactory extends \Utill\Factories\AbstractFactory {
-    
-    /**
-     * constructor function 
-     */
-    public function __construct() {
-        
-    }
-    
-    
+abstract  class AbstractFactory{
+    abstract protected function getUtility($identifier = null, $params = null);
 }

@@ -27,6 +27,7 @@ class LogConnection extends \BLL\BLLRabbitMQ{
      * @return array
      */
     public function insert($params = array()) {
+        print_r($params);
         $DAL = $this->getDALManager()->get('logConnectionPDO');
         return $DAL->insert($params);
     }

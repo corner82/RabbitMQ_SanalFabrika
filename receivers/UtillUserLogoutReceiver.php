@@ -1,11 +1,15 @@
 <?php
-require_once '..\vendor\autoload.php';
-//require_once('restEntryReceiver.php');
-//require_once('..\vendor\utill\receivers\RestEntryReceiver.php');
- 
-//use Acme\AmqpWrapper\WorkerReceiver;
+/**
+ * OSTİM TEKNOLOJİ Framework 
+ *
+ * @link      https://github.com/corner82/RabbitMQ_SanalFabrika for the canonical source repository
+ * @copyright Copyright (c) 2016 OSTİM TEKNOLOJİ (http://www.ostim.com.tr)
+ * @license   OKAN CİRANĞ
+ */
 
-use Utill\Receivers\RestEntryReceiver as Receiver;
+require_once '..\vendor\autoload.php';
+
+use Utill\Receivers\UserLogoutReceiver as Receiver;
 
 $serviceManagerUtillConfigObject = new \Utill\Service\Manager\config();
 $serviceManagerConfig = new \Zend\ServiceManager\Config(
@@ -30,7 +34,7 @@ $worker->setServiceLocator($serviceManager);
 $worker->setBLLManager($bllManager);
 $worker->setDalManager($dalManager);
 
-$worker->setQueueName('userLogin_queue');
+$worker->setQueueName('userLogout_queue');
 $worker->setCallback('process');
  
 $worker->listen();

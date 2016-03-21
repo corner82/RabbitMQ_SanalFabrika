@@ -9,10 +9,15 @@
 
 namespace Utill\Receivers;
 
+ 
+
  class AbstractReceiver implements \DAL\DalManagerInterface,
                                     \BLL\BLLManagerInterface,
                                     \Zend\ServiceManager\ServiceLocatorAwareInterface{
     
+     const QUEUE_NAME = 'userLogin2_queue'; 
+     const PAGE_ENTRY_LOG_QUEUE_NAME = 'userPageEntryLog2_queue'; 
+     
     /**
      * connection user
      * @var string

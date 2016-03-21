@@ -6,14 +6,14 @@
  * @copyright Copyright (c) 2015 OSTİM TEKNOLOJİ (http://www.ostim.com.tr)
  * @license   
  */
+namespace Utill\Dal;
 
-namespace Utill\Factories;
-
-/**
- * base class for factory type operations
- * @author Mustafa Zeynel Dağlı
- * @since 11/02/2016
- */
-abstract  class AbstractFactory{
-    abstract protected function getUtill($identifier = null);
+final class Helper {
+    
+    
+    public static function haveRecord($result = null) {
+        if(isset($result['resultSet'][0]['control'])) return true;
+        return false;
+    }
 }
+

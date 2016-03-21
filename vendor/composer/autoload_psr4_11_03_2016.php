@@ -6,8 +6,7 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Zend\\ServiceManager\\' => array($vendorDir . '/zendframework/zend-servicemanager/src'),
-    'Interop\\Container\\' => array($vendorDir . '/container-interop/container-interop/src/Interop/Container'),
+    'PhpAmqpLib\\' => array($vendorDir . '/videlalvaro/php-amqplib/PhpAmqpLib'),
     'Receivers\\' => array($vendorDir . '/receivers'),
     'Utill\\' => array($vendorDir . '/utill'),
     'Utill\\Receivers\\' => array($vendorDir . '/utill/receivers'),
@@ -18,7 +17,6 @@ return array(
     'DAL\\' => array($vendorDir . '/dal'),
     'DAL\\PDO\\' => array($vendorDir . '/dal/pdo'),
     'DAL\\Factory\\PDO\\' => array($vendorDir . '/dal/dalFactory/pdo'),
-    'Utill\\Dal\\' => array($vendorDir . '/utill/dal'),
     'BLL\\' => array($vendorDir . '/bll'),
     'BLL\\BLL\\' => array($vendorDir . '/bll/bll'),
     'Utill\\Factories\\' => array($vendorDir . '/utill/factories'),

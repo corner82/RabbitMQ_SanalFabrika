@@ -71,7 +71,7 @@ class LogConnection extends \DAL\DalRabbitMQ {
         }
     }
 
-    /**   
+   /**   
      * @author Okan CIRAN
      * @ connection_log tablosuna yeni bir kayıt oluşturur.  !!
      * @version v 1.0  10.03.2016
@@ -82,26 +82,60 @@ class LogConnection extends \DAL\DalRabbitMQ {
     public function insert($params = array()) {        
         try {
             $pdo = $this->getServiceLocator()->get('pgConnectLogFactory');
-            $pdo->beginTransaction();            
-                $sql = "
+            $pdo->beginTransaction();
+            
+            
+            $pk = NULL;
+            $userIdValue = NULL;
+            if ((isset($params['pk']) && $params['pk'] != "")) {
+                $pk = intval($params['pk']) ;
+                $userId = InfoUsers::getUserId(array('pk' => $params['pk']));
+                if (\Utill\Dal\Helper::haveRecord($userId)) {
+                    $userIdValue = $userId ['resultSet'][0]['user_id'];                    
+                }
+            }
+            $sql = "
                 INSERT INTO connection_log(
                        pk, 
-                       type_id )
+                       type_id,
+                       log_datetime,
+                       url, 
+                       path, 
+                       ip, 
+                       params,
+                       op_user_id,
+                       method                       
+                       )
                 VALUES (
                         :pk,
-                        :type_id
+                        :type_id,
+                        :log_datetime,
+                        :url, 
+                        :path, 
+                        :ip, 
+                        :params,
+                        :op_user_id, 
+                        :method                       
                                              )   ";
-                $statement = $pdo->prepare($sql);
-                $statement->bindValue(':pk', $params['pk'], \PDO::PARAM_STR);
-                $statement->bindValue(':type_id', $params['type_id'], \PDO::PARAM_INT);                
-               // echo debugPDO($sql, $params);
-                $result = $statement->execute();
-                $insertID = $pdo->lastInsertId('connection_log_id_seq');
-                $errorInfo = $statement->errorInfo();
-                if ($errorInfo[0] != "00000" && $errorInfo[1] != NULL && $errorInfo[2] != NULL)
-                    throw new \PDOException($errorInfo[0]);
-                $pdo->commit();
-                return array("found" => true, "errorInfo" => $errorInfo, "lastInsertId" => $insertID);            
+            $statement = $pdo->prepare($sql);
+            $statement->bindValue(':pk', $pk, \PDO::PARAM_STR);
+            $statement->bindValue(':type_id', $params['type_id'], \PDO::PARAM_INT);
+            $statement->bindValue(':log_datetime', $params['log_datetime'], \PDO::PARAM_STR);
+            $statement->bindValue(':url', $params['url'], \PDO::PARAM_STR);
+            $statement->bindValue(':path', $params['path'], \PDO::PARAM_STR);
+            $statement->bindValue(':ip', $params['ip'], \PDO::PARAM_STR);
+            $statement->bindValue(':params', $params['params'], \PDO::PARAM_STR);
+            $statement->bindValue(':op_user_id', $userIdValue, \PDO::PARAM_INT);            
+            $statement->bindValue(':method', $params['method'], \PDO::PARAM_STR);
+                      
+            //  echo debugPDO($sql, $params);
+            $result = $statement->execute();
+            $insertID = $pdo->lastInsertId('connection_log_id_seq');
+            $errorInfo = $statement->errorInfo();
+            if ($errorInfo[0] != "00000" && $errorInfo[1] != NULL && $errorInfo[2] != NULL)
+                throw new \PDOException($errorInfo[0]);
+            $pdo->commit();
+            return array("found" => true, "errorInfo" => $errorInfo, "lastInsertId" => $insertID);            
         } catch (\PDOException $e /* Exception $e */) {
             $pdo->rollback();
             return array("found" => false, "errorInfo" => $e->getMessage());
