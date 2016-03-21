@@ -16,7 +16,8 @@ namespace Utill\Receivers;
                                     \Zend\ServiceManager\ServiceLocatorAwareInterface{
     
      const QUEUE_NAME = 'userLogin2_queue'; 
-     const PAGE_ENTRY_LOG_QUEUE_NAME = 'userPageEntryLog2_queue'; 
+     const PAGE_ENTRY_LOG_QUEUE_NAME = 'userPageEntryLog2_queue';
+     const SERVICE_ENTRY_LOG_QUEUE_NAME = 'serviceEntryLog2_queue'; 
      
     /**
      * connection user

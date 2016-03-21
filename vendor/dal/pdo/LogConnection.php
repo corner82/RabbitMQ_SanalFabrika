@@ -88,7 +88,7 @@ class LogConnection extends \DAL\DalRabbitMQ {
             $pk = NULL;
             $userIdValue = NULL;
             if ((isset($params['pk']) && $params['pk'] != "")) {
-                $pk = intval($params['pk']) ;
+                $pk = $params['pk'] ;
                 $userId = InfoUsers::getUserId(array('pk' => $params['pk']));
                 if (\Utill\Dal\Helper::haveRecord($userId)) {
                     $userIdValue = $userId ['resultSet'][0]['user_id'];                    
