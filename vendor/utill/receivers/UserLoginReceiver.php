@@ -104,7 +104,7 @@ class UserLoginReceiver extends AbstractReceiver
                                     'type_id'=>$messageBody->type_id,
                                      'log_datetime'=>$messageBody->log_datetime,
                                      'url'=>$messageBody->url,
-                                     'params'=>$messageBody->params,
+                                     'params'=>json_encode($messageBody->params),
                                      'ip'=>$messageBody->ip,
                                      'path'=>$messageBody->path,
                                      'method'=>$messageBody->method,

@@ -1,9 +1,12 @@
 <?php
+/**
+ * OSTİM TEKNOLOJİ Framework 
+ *
+ * @link      https://github.com/corner82/RabbitMQ_SanalFabrika for the canonical source repository
+ * @copyright Copyright (c) 2016 OSTİM TEKNOLOJİ (http://www.ostim.com.tr)
+ * @license   
+ */
 require_once '..\vendor\autoload.php';
-//require_once('restEntryReceiver.php');
-//require_once('..\vendor\utill\receivers\RestEntryReceiver.php');
- 
-//use Acme\AmqpWrapper\WorkerReceiver;
 
 use Utill\Receivers\RestEntryReceiver as Receiver;
 
@@ -30,7 +33,7 @@ $worker->setServiceLocator($serviceManager);
 $worker->setBLLManager($bllManager);
 $worker->setDalManager($dalManager);
 
-$worker->setQueueName('userLogin_queue');
+$worker->setQueueName(Receiver::SERVICE_ENTRY_LOG_QUEUE_NAME);
 $worker->setCallback('process');
  
 $worker->listen();
