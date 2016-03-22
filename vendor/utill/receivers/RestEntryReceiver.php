@@ -94,9 +94,10 @@ class RestEntryReceiver extends AbstractReceiver
         //$users = new \BLL\BLL\InfoUsers();
         //sleep(mt_rand(2, 5));
          $messageBody = json_decode($message->body);
-        print_r($messageBody->message);
-        $logProcesser = $this->getBLLManager()->get('logConnectionBLL');
-        $logProcesser->insert(array('pk'=>$messageBody->pk, 
+        //print_r($messageBody->message);
+        $logProcesser = $this->getBLLManager()->get('serviceConnectionBLL');
+        $logProcesser->insert(array('pk'=>$messageBody->pk,
+                                    'pk_temp'=>$messageBody->pk_temp,
                                     'type_id'=>$messageBody->type_id,
                                      'log_datetime'=>$messageBody->log_datetime,
                                      'url'=>$messageBody->url,

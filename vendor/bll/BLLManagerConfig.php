@@ -67,6 +67,7 @@ class BLLManagerConfig{
                  'sysNaceCodesBLL' => 'BLL\BLL\SysNaceCodes',
                  'hstryLoginBLL' => 'BLL\BLL\HstryLogin',
                  'logConnectionBLL' => 'BLL\BLL\LogConnection',
+                 'serviceConnectionBLL' => 'BLL\BLL\LogServices',
                                   
              ),
              'factories' => [

@@ -71,6 +71,7 @@ class DalManagerConfig {
                 'sysNaceCodesPDO' => 'DAL\Factory\PDO\SysNaceCodesFactory',
                 'hstryLoginPDO' => 'DAL\Factory\PDO\HstryLoginFactory',
                 'logConnectionPDO' => 'DAL\Factory\PDO\LogConnectionFactory',
+                'logServicePDO' => 'DAL\Factory\PDO\LogServiceFactory',
                 
                   
             ],
