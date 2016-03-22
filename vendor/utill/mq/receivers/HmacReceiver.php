@@ -4,17 +4,16 @@
  *
  * @link      https://github.com/corner82/RabbitMQ_SanalFabrika for the canonical source repository
  * @copyright Copyright (c) 2016 OSTİM TEKNOLOJİ (http://www.ostim.com.tr)
- * @license   OKAN CİRANĞ
+ * @license   
  */
 
-namespace Utill\Receivers;
+namespace Utill\MQ\Receivers;
+
 
 use PhpAmqpLib\Connection\AMQPConnection;
 use PhpAmqpLib\Message\AMQPMessage;
-
-
  
-class UserLogoutReceiver extends AbstractReceiver
+class HmacReceiver
 {
     /* ... SOME OTHER CODE HERE ... */
      
@@ -24,16 +23,15 @@ class UserLogoutReceiver extends AbstractReceiver
      */
     public function listen()
     {
-        $connection = new AMQPConnection($this->server, $this->port, $this->user, $this->password);
+        $connection = new AMQPConnection('localhost', 5672, 'guest', 'guest');
         $channel = $connection->channel();
          
         $channel->queue_declare(
-            $this->queueName,             #queue
-            $this->queuePassive,          #passive
-            $this->durable,               #durable, make sure that RabbitMQ will never lose our queue if a crash occurs
-            $this->exclusive,             #exclusive - queues may only be accessed by the current connection
-            /*$this->autoDelete */           #auto delete - the queue is deleted when all consumers have finished using it
-                false
+            'hmac_queue',    #queue
+            false,              #passive
+            true,               #durable, make sure that RabbitMQ will never lose our queue if a crash occurs
+            false,              #exclusive - queues may only be accessed by the current connection
+            false               #auto delete - the queue is deleted when all consumers have finished using it
             );
              
         /**
@@ -42,9 +40,9 @@ class UserLogoutReceiver extends AbstractReceiver
          * next worker that is not still busy.
          */
         $channel->basic_qos(
-            $this->preFetchSize,       #prefetch size - prefetch window size in octets, null meaning "no specific limit"
-            $this->preFetchCount,      #prefetch count - prefetch window in terms of whole messages
-            $this->global              #global - global=null to mean that the QoS settings should apply per-consumer, global=true to mean that the QoS settings should apply per-channel
+            null,   #prefetch size - prefetch window size in octets, null meaning "no specific limit"
+            1,      #prefetch count - prefetch window in terms of whole messages
+            null    #global - global=null to mean that the QoS settings should apply per-consumer, global=true to mean that the QoS settings should apply per-channel
             );
          
         /**
@@ -53,13 +51,13 @@ class UserLogoutReceiver extends AbstractReceiver
          * Each consumer (subscription) has an identifier called a consumer tag
          */
         $channel->basic_consume(
-            $this->queueName,       #queue
+            'hmac_queue',     #queue
             '',                     #consumer tag - Identifier for the consumer, valid within the current channel. just string
-            $this->noLocal,         #no local - TRUE: the server will not send messages to the connection that published them
-            $this->noAck,           #no ack, false - acks turned on, true - off.  send a proper acknowledgment from the worker, once we're done with a task
-            $this->exclusive,       #exclusive - queues may only be accessed by the current connection
-            $this->noWait,          #no wait - TRUE: the server will not respond to the method. The client should not wait for a reply method
-            array($this, $this->queueCallBack) #callback
+            false,                  #no local - TRUE: the server will not send messages to the connection that published them
+            false,                  #no ack, false - acks turned on, true - off.  send a proper acknowledgment from the worker, once we're done with a task
+            false,                  #exclusive - queues may only be accessed by the current connection
+            false,                  #no wait - TRUE: the server will not respond to the method. The client should not wait for a reply method
+            array($this, 'process') #callback
             );
              
         while(count($channel->callbacks)) {
@@ -80,9 +78,6 @@ class UserLogoutReceiver extends AbstractReceiver
     {
         //$this->generatePdf()->sendEmail();
         $this->writeLog($msg);
-        
-        //$this->getServiceLocator()->get('test');
-        
          
         /**
          * If a consumer dies without sending an acknowledgement the AMQP broker 
@@ -94,39 +89,18 @@ class UserLogoutReceiver extends AbstractReceiver
     }
     
     private function writeLog($message) {
-        $messageBody = json_decode($message->body);
-        print_r($messageBody->message);
-        $logProcesser = $this->getBLLManager()->get('logConnectionBLL');
-        $logProcesser->insert(array('pk'=>$messageBody->pk, 
-                                    'type_id'=>$messageBody->type_id,
-                                     'log_datetime'=>$messageBody->log_datetime,
-                                     'url'=>$messageBody->url,
-                                     //'params'=>json_encode($messageBody->params),
-                                     'params'=>$messageBody->params,
-                                     'ip'=>$messageBody->ip,
-                                     'path'=>$messageBody->path,
-                                     'method'=>$messageBody->method,
-                                    ));
-        
         //print_r(json_decode($message->body));
-        /*try {
+        try {
             $messageBody = json_decode($message->body);
             print_r($messageBody->time);
-            //print_r($messageBody->logFormat);
-            //print_r(json_decode($messageBody->params, true));
-            /*$seriliazed = serialize(json_decode($messageBody->params, true));
-            print_r(unserialize($seriliazed));*/
-           /* if(is_object($messageBody)) {
+            print_r($messageBody->logFormat);
+            if(is_object($messageBody)) {
                 if($messageBody->logFormat == 'file') {
                     try {
-                        $file = fopen("../log/restEntry.txt","a"); 
+                        $file = fopen("../log/hmac.txt","a"); 
                         fwrite($file,"Hata Açıklaması : ".$messageBody->message."\r\n");
                         fwrite($file,"Zaman           : ".$messageBody->time."\r\n");
                         fwrite($file,"IP              : ".$messageBody->ip."\r\n");
-                        fwrite($file,"Url             : ".$messageBody->url."\r\n");
-                        fwrite($file,"Path            : ".$messageBody->path."\r\n");
-                        fwrite($file,"Method          : ".$messageBody->method."\r\n");
-                        fwrite($file,"Params          : ".serialize(json_decode($messageBody->params, true))."\r\n");
                         fwrite($file,"Serial          : ".$messageBody->serial."\r\n");
                         fwrite($file,"---------------------------------------------------\r\n");
                         fclose($file); 
@@ -139,7 +113,7 @@ class UserLogoutReceiver extends AbstractReceiver
         } catch (Exception $exc) {
             echo $exc->getTraceAsString();
             mail('311corner82@gmail.com', 'rabbitMQ logging Exception', $exc->getTraceAsString());
-        } */
+        } 
 
         
         

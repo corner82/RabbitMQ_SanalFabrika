@@ -4,17 +4,15 @@
  *
  * @link      https://github.com/corner82/RabbitMQ_SanalFabrika for the canonical source repository
  * @copyright Copyright (c) 2016 OSTİM TEKNOLOJİ (http://www.ostim.com.tr)
- * @license   OKAN CİRANĞ
+ * @license   
  */
 
-namespace Utill\Receivers;
+namespace Utill\MQ\Receivers;
 
 use PhpAmqpLib\Connection\AMQPConnection;
 use PhpAmqpLib\Message\AMQPMessage;
-
-
  
-class UserLogoutReceiver extends AbstractReceiver
+class RestEntryReceiver extends AbstractReceiver
 {
     /* ... SOME OTHER CODE HERE ... */
      
@@ -94,14 +92,18 @@ class UserLogoutReceiver extends AbstractReceiver
     }
     
     private function writeLog($message) {
-        $messageBody = json_decode($message->body);
-        print_r($messageBody->message);
-        $logProcesser = $this->getBLLManager()->get('logConnectionBLL');
-        $logProcesser->insert(array('pk'=>$messageBody->pk, 
+        //$infoUsersBLL = $this->getBLLManager()->get('infoUsersBLL');
+        //$infoUsersBLL->test();
+        //$users = new \BLL\BLL\InfoUsers();
+        //sleep(mt_rand(2, 5));
+         $messageBody = json_decode($message->body);
+        //print_r($messageBody->message);
+        $logProcesser = $this->getBLLManager()->get('serviceConnectionBLL');
+        $logProcesser->insert(array('pk'=>$messageBody->pk,
+                                    'pk_temp'=>$messageBody->pk_temp,
                                     'type_id'=>$messageBody->type_id,
                                      'log_datetime'=>$messageBody->log_datetime,
                                      'url'=>$messageBody->url,
-                                     //'params'=>json_encode($messageBody->params),
                                      'params'=>$messageBody->params,
                                      'ip'=>$messageBody->ip,
                                      'path'=>$messageBody->path,

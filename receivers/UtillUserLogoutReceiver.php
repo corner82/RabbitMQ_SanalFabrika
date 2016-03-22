@@ -9,7 +9,7 @@
 
 require_once '..\vendor\autoload.php';
 
-use Utill\Receivers\UserLogoutReceiver as Receiver;
+use Utill\MQ\Receivers\UserLogoutReceiver as Receiver;
 
 $serviceManagerUtillConfigObject = new \Utill\Service\Manager\config();
 $serviceManagerConfig = new \Zend\ServiceManager\Config(

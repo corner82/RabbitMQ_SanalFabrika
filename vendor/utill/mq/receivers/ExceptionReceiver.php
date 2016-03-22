@@ -1,10 +1,18 @@
 <?php
-require_once '..\vendor\autoload.php';
+/**
+ * OSTİM TEKNOLOJİ Framework 
+ *
+ * @link      https://github.com/corner82/RabbitMQ_SanalFabrika for the canonical source repository
+ * @copyright Copyright (c) 2016 OSTİM TEKNOLOJİ (http://www.ostim.com.tr)
+ * @license   
+ */
+namespace Utill\MQ\Receivers;
+//require_once '..\vendor\autoload.php';
 
 use PhpAmqpLib\Connection\AMQPConnection;
 use PhpAmqpLib\Message\AMQPMessage;
  
-class restEntryReceiver
+class ExceptionReceiver
 {
     /* ... SOME OTHER CODE HERE ... */
      
@@ -18,7 +26,7 @@ class restEntryReceiver
         $channel = $connection->channel();
          
         $channel->queue_declare(
-            'restEntry_queue2',    #queue
+            'invoice_queue',    #queue
             false,              #passive
             true,               #durable, make sure that RabbitMQ will never lose our queue if a crash occurs
             false,              #exclusive - queues may only be accessed by the current connection
@@ -42,7 +50,7 @@ class restEntryReceiver
          * Each consumer (subscription) has an identifier called a consumer tag
          */
         $channel->basic_consume(
-            'restEntry_queue2',     #queue
+            'exceptions_queue',     #queue
             '',                     #consumer tag - Identifier for the consumer, valid within the current channel. just string
             false,                  #no local - TRUE: the server will not send messages to the connection that published them
             false,                  #no ack, false - acks turned on, true - off.  send a proper acknowledgment from the worker, once we're done with a task
@@ -84,21 +92,15 @@ class restEntryReceiver
         try {
             $messageBody = json_decode($message->body);
             print_r($messageBody->time);
-            //print_r($messageBody->logFormat);
-            //print_r(json_decode($messageBody->params, true));
-            /*$seriliazed = serialize(json_decode($messageBody->params, true));
-            print_r(unserialize($seriliazed));*/
+            print_r($messageBody->logFormat);
             if(is_object($messageBody)) {
                 if($messageBody->logFormat == 'file') {
                     try {
-                        $file = fopen("../log/restEntry.txt","a"); 
+                        $file = fopen("../log/exceptions.txt","a"); 
+                        fwrite($file,"Hata Dosyası    : ".$messageBody->file."\r\n");
+                        fwrite($file,"Hata Satırı     : ".$messageBody->line."\r\n");
                         fwrite($file,"Hata Açıklaması : ".$messageBody->message."\r\n");
                         fwrite($file,"Zaman           : ".$messageBody->time."\r\n");
-                        fwrite($file,"IP              : ".$messageBody->ip."\r\n");
-                        fwrite($file,"Url             : ".$messageBody->url."\r\n");
-                        fwrite($file,"Path            : ".$messageBody->path."\r\n");
-                        fwrite($file,"Method          : ".$messageBody->method."\r\n");
-                        fwrite($file,"Params          : ".serialize(json_decode($messageBody->params, true))."\r\n");
                         fwrite($file,"Serial          : ".$messageBody->serial."\r\n");
                         fwrite($file,"---------------------------------------------------\r\n");
                         fclose($file); 

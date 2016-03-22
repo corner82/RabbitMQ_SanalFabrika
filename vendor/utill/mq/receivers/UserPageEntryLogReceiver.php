@@ -4,17 +4,18 @@
  *
  * @link      https://github.com/corner82/RabbitMQ_SanalFabrika for the canonical source repository
  * @copyright Copyright (c) 2016 OSTİM TEKNOLOJİ (http://www.ostim.com.tr)
- * @license   OKAN CİRANĞ
+ * @license   
  */
+namespace Utill\MQ\Receivers;
 
-namespace Utill\Receivers;
+
 
 use PhpAmqpLib\Connection\AMQPConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 
 
  
-class UserLogoutReceiver extends AbstractReceiver
+class UserPageEntryLogReceiver extends AbstractReceiver
 {
     /* ... SOME OTHER CODE HERE ... */
      
@@ -95,6 +96,7 @@ class UserLogoutReceiver extends AbstractReceiver
     
     private function writeLog($message) {
         $messageBody = json_decode($message->body);
+        //$messageBody = $message->body;
         print_r($messageBody->message);
         $logProcesser = $this->getBLLManager()->get('logConnectionBLL');
         $logProcesser->insert(array('pk'=>$messageBody->pk, 
@@ -102,47 +104,11 @@ class UserLogoutReceiver extends AbstractReceiver
                                      'log_datetime'=>$messageBody->log_datetime,
                                      'url'=>$messageBody->url,
                                      //'params'=>json_encode($messageBody->params),
-                                     'params'=>$messageBody->params,
+                                    'params'=>$messageBody->params,
                                      'ip'=>$messageBody->ip,
                                      'path'=>$messageBody->path,
                                      'method'=>$messageBody->method,
                                     ));
-        
-        //print_r(json_decode($message->body));
-        /*try {
-            $messageBody = json_decode($message->body);
-            print_r($messageBody->time);
-            //print_r($messageBody->logFormat);
-            //print_r(json_decode($messageBody->params, true));
-            /*$seriliazed = serialize(json_decode($messageBody->params, true));
-            print_r(unserialize($seriliazed));*/
-           /* if(is_object($messageBody)) {
-                if($messageBody->logFormat == 'file') {
-                    try {
-                        $file = fopen("../log/restEntry.txt","a"); 
-                        fwrite($file,"Hata Açıklaması : ".$messageBody->message."\r\n");
-                        fwrite($file,"Zaman           : ".$messageBody->time."\r\n");
-                        fwrite($file,"IP              : ".$messageBody->ip."\r\n");
-                        fwrite($file,"Url             : ".$messageBody->url."\r\n");
-                        fwrite($file,"Path            : ".$messageBody->path."\r\n");
-                        fwrite($file,"Method          : ".$messageBody->method."\r\n");
-                        fwrite($file,"Params          : ".serialize(json_decode($messageBody->params, true))."\r\n");
-                        fwrite($file,"Serial          : ".$messageBody->serial."\r\n");
-                        fwrite($file,"---------------------------------------------------\r\n");
-                        fclose($file); 
-                    } catch (Exception $exc) {
-                        echo $exc->getTraceAsString();
-                        mail('311corner82@gmail.com', 'rabbitMQ logging Exception', $exc->getTraceAsString());
-                    } 
-                }
-            }
-        } catch (Exception $exc) {
-            echo $exc->getTraceAsString();
-            mail('311corner82@gmail.com', 'rabbitMQ logging Exception', $exc->getTraceAsString());
-        } */
-
-        
-        
     }
 
 

@@ -8,7 +8,7 @@
  */
 require_once '..\vendor\autoload.php';
 
-use Utill\Receivers\RestEntryReceiver as Receiver;
+use Utill\MQ\Receivers\RestEntryReceiver as Receiver;
 
 $serviceManagerUtillConfigObject = new \Utill\Service\Manager\config();
 $serviceManagerConfig = new \Zend\ServiceManager\Config(

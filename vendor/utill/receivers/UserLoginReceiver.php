@@ -93,10 +93,6 @@ class UserLoginReceiver extends AbstractReceiver
     }
     
     private function writeLog($message) {
-        //$infoUsersBLL = $this->getBLLManager()->get('infoUsersBLL');
-        //$infoUsersBLL->test();
-        //$users = new \BLL\BLL\InfoUsers();
-        //sleep(mt_rand(2, 5));
         $messageBody = json_decode($message->body);
         print_r($messageBody->message);
         $logProcesser = $this->getBLLManager()->get('logConnectionBLL');
@@ -104,7 +100,8 @@ class UserLoginReceiver extends AbstractReceiver
                                     'type_id'=>$messageBody->type_id,
                                      'log_datetime'=>$messageBody->log_datetime,
                                      'url'=>$messageBody->url,
-                                     'params'=>json_encode($messageBody->params),
+                                     //'params'=>json_encode($messageBody->params),
+                                     'params'=>$messageBody->params,
                                      'ip'=>$messageBody->ip,
                                      'path'=>$messageBody->path,
                                      'method'=>$messageBody->method,
